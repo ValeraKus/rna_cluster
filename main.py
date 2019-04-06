@@ -44,20 +44,20 @@ per_cell_sum = mat.sum(axis=1)
 per_gene_sum = mat.sum(axis=0)
 
 #===== 2
-mat = mat[:,(per_gene_sum>=low_expr_thr) & (per_gene_sum<=high_expr_thr)] #just remove extreme outliers
+mat = mat[:,(per_gene_sum>=np.quantile(per_gene_sum, 0.05)) & (per_gene_sum<=np.quantile(per_gene_sum, 0.95))] #just remove extreme outliers
 
 mean_exp = mat.mean(axis=0)
 std_exp = np.sqrt(mat.std(axis=0))
 CV = std_exp/mean_exp
 
 #===== 3
-mat = mat[:,CV>=10]
+mat = mat[:,(CV>=np.quantile(CV, 0.05)) & (CV<=np.quantile(CV, 0.95))]
 
 
 cells_expression = mat.sum(axis=1)
 
 #===== 4
-mat = mat[cells_expression>=100,:]
+mat = mat[(cells_expression>=np.quantile(cells_expression, 0.05)) & (cells_expression<=np.quantile(cells_expression, 0.95)),:]
 mat = np.log(mat+1)
 
 pca = PCA(n_components=100)
